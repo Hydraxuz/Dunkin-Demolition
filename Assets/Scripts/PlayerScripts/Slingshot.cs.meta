@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: b242f7cd22499b041b1fedc7f80e2045
+MonoImporter:
+  externalObjects: {}
+  serializedVersion: 2
+  defaultReferences:
+  - center: {instanceID: 0}
+  - idlePosition: {instanceID: 0}
+  - donutPrefab: {instanceID: 0}
+  - slingshotClip: {fileID: 8300000, guid: 8e6105476bdcae54d8bba454d432f975, type: 3}
+  executionOrder: 0
+  icon: {instanceID: 0}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
