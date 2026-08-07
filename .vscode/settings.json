@@ -51,5 +51,5 @@
         "temp/": true,
         "Temp/": true
     },
-    "dotnet.defaultSolution": "Dunkin Demolition - 2019.4.slnx"
+    "dotnet.defaultSolution": "Dunkin Demolition.slnx"
 }
