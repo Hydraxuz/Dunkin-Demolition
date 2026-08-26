@@ -129,7 +129,7 @@ public class Slingshot : MonoBehaviour
             donutCollider.enabled = false;
         }
 
-        donut.isKinematic = true;
+        donut.bodyType = RigidbodyType2D.Static;
     }
 
     private void Shoot()
@@ -139,7 +139,7 @@ public class Slingshot : MonoBehaviour
             return;
         }
 
-        donut.isKinematic = false;
+        donut.bodyType = RigidbodyType2D.Dynamic;
         Vector3 donutForce = (currentPosition - center.position) * force * -1f;
         donut.linearVelocity = donutForce;
 
