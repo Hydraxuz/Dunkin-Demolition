@@ -10,6 +10,14 @@ public class Enemy : MonoBehaviour
     public AudioSource audioSource;
     public AudioClip enemyDeathSound;
     private const float volume = 1f;
+    private const float levelLoadDelay = 1.5f;
+    private const float spawnImmunityDuration = 1f;
+    private float immuneUntil;
+
+    private void Awake()
+    {
+        immuneUntil = Time.time + spawnImmunityDuration;
+    }
 
     private void Start()
     {
@@ -26,7 +34,20 @@ public class Enemy : MonoBehaviour
 
     private void OnCollisionEnter2D(Collision2D collisionInfo)
     {
-        if (collisionInfo.relativeVelocity.magnitude > health)
+        TakeDamage(collisionInfo.relativeVelocity.magnitude);
+    }
+
+    private void TakeDamage(float damage)
+    {
+        if (damage <= 0f || Time.time < immuneUntil)
+        {
+            return;
+        }
+
+        health -= damage;
+        DamageNumber.Create(transform.position, damage, health <= 0f);
+
+        if (health <= 0f)
         {
             Die();
         }
@@ -45,11 +66,29 @@ public class Enemy : MonoBehaviour
         }
 
         EnemiesAlive = Mathf.Max(0, EnemiesAlive - 1);
-        Destroy(gameObject);
 
         if (EnemiesAlive <= 0)
         {
-            SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex + 1);
+            // Destroying this GameObject would cancel an Invoke scheduled on it,
+            // so the delayed load runs on a separate object that outlives the enemy.
+            new GameObject("LevelLoadTimer").AddComponent<LevelLoadTimer>().Begin(levelLoadDelay);
         }
+
+        Destroy(gameObject);
+    }
+}
+
+public class LevelLoadTimer : MonoBehaviour
+{
+    public void Begin(float delay)
+    {
+        DontDestroyOnLoad(gameObject);
+        Invoke(nameof(LoadNextLevel), delay);
+    }
+
+    private void LoadNextLevel()
+    {
+        SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex + 1);
+        Destroy(gameObject);
     }
 }
