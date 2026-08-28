@@ -233,7 +233,10 @@ MonoBehaviour:
   currentPosition: {x: 0, y: 0, z: 0}
   maxLength: 5
   bottomBoundary: -10.4
-  donutPrefab: {fileID: 9065017008421604944, guid: 5d2c994bd9520d34b9ef11cb6ce7ec4f, type: 3}
+  donutPrefabs:
+  - {fileID: 9065017008421604944, guid: 5d2c994bd9520d34b9ef11cb6ce7ec4f, type: 3}
+  - {fileID: 6524524537803899639, guid: 93ec661a7f7fc714690d3dd29fa34348, type: 3}
+  - {fileID: 2359362665394312267, guid: 85153874cd6edb5419e53b1ee5618eb8, type: 3}
   donutPosistionOffset: -0.4
   force: 5
   slingshotShoot: {fileID: 8300000, guid: 8e6105476bdcae54d8bba454d432f975, type: 3}

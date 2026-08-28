@@ -15,7 +15,8 @@ public class Slingshot : MonoBehaviour
 
     private bool isMouseDown;
 
-    public GameObject donutPrefab;
+    public GameObject[] donutPrefabs;
+    private int selectedDonutIndex;
     private Rigidbody2D donut;
     private Collider2D donutCollider;
     public float donutPositionOffset;
@@ -68,6 +69,11 @@ public class Slingshot : MonoBehaviour
             Shoot();
         }
 
+        if (!isMouseDown)
+        {
+            HandleDonutSwitching();
+        }
+
         if (isMouseDown)
         {
             if (mainCamera == null)
@@ -93,6 +99,46 @@ public class Slingshot : MonoBehaviour
         }
     }
 
+    private void HandleDonutSwitching()
+    {
+        if (Keyboard.current == null || donutPrefabs == null || donutPrefabs.Length == 0)
+        {
+            return;
+        }
+
+        if (Keyboard.current.digit1Key.wasPressedThisFrame)
+        {
+            SelectDonut(0);
+        }
+        else if (Keyboard.current.digit2Key.wasPressedThisFrame)
+        {
+            SelectDonut(1);
+        }
+        else if (Keyboard.current.digit3Key.wasPressedThisFrame)
+        {
+            SelectDonut(2);
+        }
+    }
+
+    public void SelectDonut(int index)
+    {
+        if (isMouseDown || donutPrefabs == null || index < 0 || index >= donutPrefabs.Length || index == selectedDonutIndex)
+        {
+            return;
+        }
+
+        selectedDonutIndex = index;
+
+        if (donut != null)
+        {
+            Destroy(donut.gameObject);
+            donut = null;
+            donutCollider = null;
+        }
+
+        CreateDonut();
+    }
+
     private bool IsPointerOnSlingshot()
     {
         if (mainCamera == null)
@@ -111,12 +157,12 @@ public class Slingshot : MonoBehaviour
 
     private void CreateDonut()
     {
-        if (donutPrefab == null)
+        if (donutPrefabs == null || donutPrefabs.Length == 0 || donutPrefabs[selectedDonutIndex] == null)
         {
             return;
         }
 
-        GameObject donutObject = Instantiate(donutPrefab);
+        GameObject donutObject = Instantiate(donutPrefabs[selectedDonutIndex]);
         donut = donutObject.GetComponent<Rigidbody2D>();
         if (donut == null)
         {
@@ -142,6 +188,12 @@ public class Slingshot : MonoBehaviour
         donut.bodyType = RigidbodyType2D.Dynamic;
         Vector3 donutForce = (currentPosition - center.position) * force * -1f;
         donut.linearVelocity = donutForce;
+
+        Player launchedPlayer = donut.GetComponent<Player>();
+        if (launchedPlayer != null)
+        {
+            launchedPlayer.Launch();
+        }
 
         donut = null;
         donutCollider = null;
