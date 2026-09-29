@@ -1,5 +1,4 @@
 using UnityEngine;
-using UnityEngine.SceneManagement;
 
 public class Enemy : MonoBehaviour
 {
@@ -13,6 +12,8 @@ public class Enemy : MonoBehaviour
     private const float levelLoadDelay = 1.5f;
     private const float spawnImmunityDuration = 1f;
     private float immuneUntil;
+    private bool isCounted;
+    private bool hasDied;
 
     private void Awake()
     {
@@ -22,6 +23,7 @@ public class Enemy : MonoBehaviour
     private void Start()
     {
         EnemiesAlive++;
+        isCounted = true;
     }
 
     private void OnTriggerEnter2D(Collider2D collision)
@@ -55,6 +57,13 @@ public class Enemy : MonoBehaviour
 
     private void Die()
     {
+        if (hasDied)
+        {
+            return;
+        }
+
+        hasDied = true;
+
         if (deathEffect != null)
         {
             Instantiate(deathEffect, transform.position, Quaternion.identity);
@@ -65,7 +74,7 @@ public class Enemy : MonoBehaviour
             audioSource.PlayOneShot(enemyDeathSound, volume);
         }
 
-        EnemiesAlive = Mathf.Max(0, EnemiesAlive - 1);
+        RemoveFromAliveCount();
 
         if (EnemiesAlive <= 0)
         {
@@ -76,19 +85,20 @@ public class Enemy : MonoBehaviour
 
         Destroy(gameObject);
     }
-}
 
-public class LevelLoadTimer : MonoBehaviour
-{
-    public void Begin(float delay)
+    private void OnDestroy()
     {
-        DontDestroyOnLoad(gameObject);
-        Invoke(nameof(LoadNextLevel), delay);
+        RemoveFromAliveCount();
     }
 
-    private void LoadNextLevel()
+    private void RemoveFromAliveCount()
     {
-        SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex + 1);
-        Destroy(gameObject);
+        if (!isCounted)
+        {
+            return;
+        }
+
+        EnemiesAlive = Mathf.Max(0, EnemiesAlive - 1);
+        isCounted = false;
     }
 }
